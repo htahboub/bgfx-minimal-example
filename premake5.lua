@@ -13,6 +13,8 @@ solution "bgfx-minimal-example"
 	configurations { "Release", "Debug" }
 	if os.is64bit() and not os.istarget("windows") then
 		platforms "x86_64"
+	elseif os.istarget("macosx") and io.popen("uname -m"):read("*a"):match("%S+") == "arm64" then
+		platforms "ARM"
 	else
 		platforms { "x86", "x86_64" }
 	end
@@ -31,6 +33,8 @@ solution "bgfx-minimal-example"
 		}
 		optimize "Debug"
 		symbols "On"
+	filter "platforms:ARM"
+		architecture "ARM"
 	filter "platforms:x86"
 		architecture "x86"
 	filter "platforms:x86_64"
@@ -54,7 +58,7 @@ end
 project "helloworld"
 	kind "ConsoleApp"
 	language "C++"
-	cppdialect "C++14"
+	cppdialect "C++17"
 	exceptionhandling "Off"
 	rtti "Off"
 	files "helloworld.cpp"
@@ -76,7 +80,7 @@ project "helloworld"
 project "helloworld_mt"
 	kind "ConsoleApp"
 	language "C++"
-	cppdialect "C++14"
+	cppdialect "C++17"
 	exceptionhandling "Off"
 	rtti "Off"
 	files "helloworld_mt.cpp"
@@ -98,7 +102,7 @@ project "helloworld_mt"
 project "bgfx"
 	kind "StaticLib"
 	language "C++"
-	cppdialect "C++14"
+	cppdialect "C++17"
 	exceptionhandling "Off"
 	rtti "Off"
 	defines "__STDC_FORMAT_MACROS"
@@ -138,7 +142,7 @@ project "bgfx"
 project "bimg"
 	kind "StaticLib"
 	language "C++"
-	cppdialect "C++14"
+	cppdialect "C++17"
 	exceptionhandling "Off"
 	rtti "Off"
 	files
@@ -147,21 +151,21 @@ project "bimg"
 		path.join(BIMG_DIR, "src/image.cpp"),
 		path.join(BIMG_DIR, "src/image_gnf.cpp"),
 		path.join(BIMG_DIR, "src/*.h"),
-		path.join(BIMG_DIR, "3rdparty/astc-codec/src/decoder/*.cc")
+		path.join(BIMG_DIR, "3rdparty/astc-encoder/source/*.cpp")
 	}
 	includedirs
 	{
 		path.join(BX_DIR, "include"),
 		path.join(BIMG_DIR, "include"),
-		path.join(BIMG_DIR, "3rdparty/astc-codec"),
-		path.join(BIMG_DIR, "3rdparty/astc-codec/include"),
+		path.join(BIMG_DIR, "3rdparty/astc-encoder/include"),
+		path.join(BIMG_DIR, "3rdparty/astc-encoder/source"),
 	}
 	setBxCompat()
 
 project "bx"
 	kind "StaticLib"
 	language "C++"
-	cppdialect "C++14"
+	cppdialect "C++17"
 	exceptionhandling "Off"
 	rtti "Off"
 	defines "__STDC_FORMAT_MACROS"
@@ -230,12 +234,11 @@ project "glfw"
 		files
 		{
 			path.join(GLFW_DIR, "src/cocoa_*.*"),
-			path.join(GLFW_DIR, "src/posix_thread.h"),
+			path.join(GLFW_DIR, "src/posix*.*"),
 			path.join(GLFW_DIR, "src/nsgl_context.h"),
 			path.join(GLFW_DIR, "src/egl_context.h"),
 			path.join(GLFW_DIR, "src/osmesa_context.h"),
 
-			path.join(GLFW_DIR, "src/posix_thread.c"),
 			path.join(GLFW_DIR, "src/nsgl_context.m"),
 			path.join(GLFW_DIR, "src/egl_context.c"),
 			path.join(GLFW_DIR, "src/nsgl_context.m"),
